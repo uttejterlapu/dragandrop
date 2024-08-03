@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery UI Droppable - Revert draggable position</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        #droppable1,
+        #droppable2,
+        #droppable3,
+        #droppable4,
+        #droppable5 {
+
+            p {
+                border-bottom: 2px solid #fff;
+                width: 150px;
+                margin: 1px;
+            }
+        }
+
+        #draggable1,
+        #draggable2,
+        #draggable3,
+        #draggable4,
+        #draggable5 {
+            padding: 10px;
+            cursor: default !important;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            const answers = {
+                draggable1: "droppable1",
+                draggable2: "droppable2",
+                draggable3: "droppable3",
+                draggable4: "droppable4",
+                draggable5: "droppable5"
+            };
+
+
+            $("#draggable1, #draggable2, #draggable3, #draggable4, #draggable5").draggable({
+                revert: function (droppableObj) {
+                    if (droppableObj && droppableObj.attr("id") === answers[$(this).attr("id")]) {
+                        return false;
+                    }
+                    return true;
+                },
+                stop: function (event, ui) {
+                    if (!ui.helper.data("dropped")) {
+                        $(this).animate($(this).data("originalPosition"), 200);
+                    }
+                }
+            });
+
+            $.each(answers, function (draggable, droppable) {
+                $("#" + droppable).droppable({
+                    accept: "#" + draggable,
+                    drop: function (event, ui) {
+                        var $this = $(this);
+                        ui.draggable.position({
+                            my: "left top",
+                            at: "left top",
+                            of: $this,
+                            using: function (pos) {
+                                pos.top = pos.top - 23;
+                                $(this).animate(pos, 200, "linear");
+                            }
+                        });
+                        ui.draggable.data("dropped", true);
+                        ui.draggable.draggable("option", "revert", false);
+                    }
+                });
+            });
+            const org = ["Pointer", "PasswordChar", "Frame", "optionButton", "Timer"];
+            const ans = ["#ans1", "#ans2", "#ans3", "#ans4", "#ans5"]
+            $("#showAnswer").click(function () {
+                for (let i = 0; i < ans.length; i++) {
+                    $(`${ans[i]}`).html(`${org[i]}`);
+                    $(`#draggable${i+1}`).hide();
+                }
+            });
+
+            $("#hideAnswer").click(function () {
+                for (let i = 0; i < ans.length; i++) {
+                    $(`${ans[i]}`).html("");
+                    $(`#draggable${i+1}`).show();
+                }
+            });
+
+            $("#reset").click(function () {
+                window.location.reload();
+            });
+        });
+    </script>
+</head>
+
+<body class="bg-success text-light m-0">
+
+    <div class="container-lg d-flex flex-column justify-content-center align-items-center vh-100">
+        <h1 class="mb-3 display-1">Fill in the Blanks</h1>
+
+        <div class="questionContainer border border-2 rounded-3 p-4 bg-dark">
+            <ol>
+                <li class="my-3">
+                    <div id="droppable1" class="my-1 d-flex justify-content-left align-items-baseline">
+                        <p id="ans1"></p>is a tool used to select an object on the form.
+                    </div>
+                </li>
+                <li class="my-3">
+                    <div id="droppable2" class="my-1 d-flex justify-content-left align-items-baseline">
+                        <p id="ans2"></p>property of TextBox is responsible for accepting the password from the user.
+                    </div>
+                </li>
+                <li class="my-3">
+                    <div id="droppable3" class="my-1 d-flex justify-content-left align-items-baseline">
+                        <p id="ans3"></p>control is used to group the other controls.
+                    </div>
+                </li>
+                <li class="my-3">
+                    <div id="droppable4" class="my-1 d-flex justify-content-left align-items-baseline">
+                        <p id="ans4"></p>gives the number of choices from which the user can select only one.
+                    </div>
+                </li>
+                <li class="my-3">
+                    <div id="droppable5" class="my-1 d-flex justify-content-left align-items-baseline">
+                        <p id="ans5"></p>control is not displayed at the runtime but its event is fired automatically at
+                        the specific time interval.
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="titleContainer d-flex justify-content-between my-3 bg-dark px-5 py-3 rounded-3">
+            <h1 class="fs-3">HELP<br>BOX</h1>
+            <div class="dragContainer d-flex justify-content-center align-items-center">
+                <div id="draggable1" class="p-2">
+                    <p class="bg-warning text-dark p-1 rounded-3">Pointer</p>
+                </div>
+                <div id="draggable2" class="p-2">
+                    <p class="bg-warning text-dark p-1 rounded-3">PasswordChar</p>
+                </div>
+                <div id="draggable3" class="p-2">
+                    <p class="bg-warning text-dark p-1 rounded-3">Frame</p>
+                </div>
+                <div id="draggable4" class="p-2">
+                    <p class="bg-warning text-dark p-1 rounded-3">OptionButton</p>
+                </div>
+                <div id="draggable5" class="p-2">
+                    <p class="bg-warning text-dark p-1 rounded-3">Timer</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttonContainer mt-3">
+            <button id="showAnswer" class="btn btn-primary me-2">Show Answer</button>
+            <button id="hideAnswer" class="btn btn-info me-2">Hide Answer</button>
+            <button id="reset" class="btn btn-danger">Reset</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
